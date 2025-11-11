@@ -37,6 +37,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/admin/posts/{id}', [PostController::class, 'update']);
     Route::delete('/admin/posts/{id}', [PostController::class, 'destroy']);
 
+    // Users Management 
+    Route::get('/admin/users', [UserController::class, 'index']);
+    Route::post('/admin/users', [UserController::class, 'store']);
+    Route::get('/admin/users/{id}', [UserController::class, 'show']);
+    Route::put('/admin/users/{id}', [UserController::class, 'update']);
+    Route::delete('/admin/users/{id}', [UserController::class, 'destroy']);
+    Route::put('/admin/users/{id}/password', [UserController::class, 'updatePassword']);
+
     // Categories Management
     Route::post('/admin/categories', [CategoryController::class, 'store']);
     Route::put('/admin/categories/{id}', [CategoryController::class, 'update']);
