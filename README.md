@@ -192,10 +192,3 @@ The project includes a blog data seeder: [`database/seeders/BlogSeeder.php`](dat
 ## License
 
 This project follows the license referenced in the repository root (`composer.json`).
-
----
-
-If you want, I can:
-- Produce an expanded "Developer guide" section with code examples for creating posts, categories, and using the API tokens.
-- Generate a runnable Postman collection from [`apiary.apib`](apiary.apib).
-- Create missing form request classes or policy stubs referenced in controllers.
