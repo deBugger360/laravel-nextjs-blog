@@ -1,0 +1,671 @@
+FORMAT: 1A
+HOST: http://localhost:8000/api
+
+# Blog Headless CMS API
+
+A headless CMS API for a blog platform built with Laravel and Next.js. This API provides complete content management capabilities including posts, users, categories, and authentication.
+
+## Authentication
+
+This API uses Laravel Sanctum token-based authentication. Include the token in the Authorization header for protected endpoints.
+
+# Group Authentication
+
+Endpoints for user authentication and management.
+
+## Login [/login]
+
+### Authenticate User [POST]
+
++ Request (application/json)
+
+    + Attributes
+        + email: admin@blog.com (string, required) - User email address
+        + password: password123 (string, required) - User password
+
+    + Body
+
+            {
+                "email": "admin@blog.com",
+                "password": "password123"
+            }
+
++ Response 200 (application/json)
+
+    + Attributes
+        + success: true (boolean)
+        + user (object)
+        + token: 1|randomtoken123... (string)
+        + message: Logged in successfully (string)
+
+    + Body
+
+            {
+                "success": true,
+                "user": {
+                    "id": 1,
+                    "name": "Admin User",
+                    "email": "admin@blog.com",
+                    "role": "admin",
+                    "created_at": "2024-01-15T10:00:00.000000Z"
+                },
+                "token": "1|Ym1fjaelkgFFCrh5TncKy643YzZP0QcX5hI7VRauc9728667",
+                "message": "Logged in successfully"
+            }
+
+## Register [/register]
+
+### Create New User [POST]
+
++ Request (application/json)
+
+    + Attributes
+        + name: Test User (string, required) - User's full name
+        + email: test@blog.com (string, required) - User email address
+        + password: password123 (string, required) - User password (min 8 chars)
+        + password_confirmation: password123 (string, required) - Password confirmation
+
+    + Body
+
+            {
+                "name": "Test User",
+                "email": "test@blog.com",
+                "password": "password123",
+                "password_confirmation": "password123"
+            }
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "user": {
+                    "id": 3,
+                    "name": "Test User",
+                    "email": "test@blog.com",
+                    "role": "author",
+                    "created_at": "2024-01-15T10:00:00.000000Z"
+                },
+                "token": "3|anothertoken123...",
+                "message": "User registered successfully"
+            }
+
+## Logout [/logout]
+
+### Revoke Authentication Token [POST]
+
++ Headers
+
+        Authorization: Bearer {token}
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "message": "Logged out successfully"
+            }
+
+## Get Current User [/user]
+
+### Retrieve Authenticated User [GET]
+
++ Headers
+
+        Authorization: Bearer {token}
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "id": 1,
+                    "name": "Admin User",
+                    "email": "admin@blog.com",
+                    "role": "admin",
+                    "blogposts_count": 5,
+                    "created_at": "2024-01-15T10:00:00.000000Z"
+                },
+                "message": "User retrieved successfully"
+            }
+
+# Group Posts
+
+Public endpoints for retrieving blog posts.
+
+## Posts Collection [/posts]
+
+### List All Published Posts [GET]
+
++ Response 200 (application/json)
+
+    + Attributes
+        + success: true (boolean)
+        + data (array[Post])
+        + message: Posts retrieved successfully (string)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "current_page": 1,
+                    "data": [
+                        {
+                            "id": 1,
+                            "title": "Getting Started with Laravel",
+                            "slug": "getting-started-with-laravel",
+                            "content": "Laravel is a web application framework...",
+                            "excerpt": "Learn the basics of Laravel framework",
+                            "author": "John Doe",
+                            "featured_image": null,
+                            "tags": "laravel,php,api",
+                            "published": true,
+                            "user_id": 2,
+                            "category_id": 2,
+                            "created_at": "2024-01-15T10:00:00.000000Z",
+                            "updated_at": "2024-01-15T10:00:00.000000Z",
+                            "user": {
+                                "id": 2,
+                                "name": "John Doe",
+                                "email": "author@blog.com"
+                            },
+                            "category": {
+                                "id": 2,
+                                "name": "Web Development"
+                            }
+                        }
+                    ],
+                    "first_page_url": "http://localhost:8000/api/posts?page=1",
+                    "from": 1,
+                    "last_page": 1,
+                    "last_page_url": "http://localhost:8000/api/posts?page=1",
+                    "links": [...],
+                    "next_page_url": null,
+                    "path": "http://localhost:8000/api/posts",
+                    "per_page": 12,
+                    "prev_page_url": null,
+                    "to": 1,
+                    "total": 1
+                },
+                "message": "Posts retrieved successfully"
+            }
+
+## Single Post [/posts/{slug}]
+
+### Get Specific Post [GET]
+
++ Parameters
+    + slug: getting-started-with-laravel (string, required) - Post slug
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "id": 1,
+                    "title": "Getting Started with Laravel",
+                    "slug": "getting-started-with-laravel",
+                    "content": "Laravel is a web application framework...",
+                    "excerpt": "Learn the basics of Laravel framework",
+                    "author": "John Doe",
+                    "featured_image": null,
+                    "tags": "laravel,php,api",
+                    "published": true,
+                    "user_id": 2,
+                    "category_id": 2,
+                    "created_at": "2024-01-15T10:00:00.000000Z",
+                    "updated_at": "2024-01-15T10:00:00.000000Z",
+                    "user": {
+                        "id": 2,
+                        "name": "John Doe",
+                        "email": "author@blog.com"
+                    },
+                    "category": {
+                        "id": 2,
+                        "name": "Web Development"
+                    }
+                },
+                "message": "Post retrieved successfully"
+            }
+
+## Filter Posts [/posts/filter/search]
+
+### Search and Filter Posts [GET]
+
++ Parameters
+    + search: laravel (string, optional) - Search in title, content, tags, or author
+    + category: web-development (string, optional) - Filter by category name or ID
+    + author: john (string, optional) - Filter by author name
+    + tag: api (string, optional) - Filter by tag
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "current_page": 1,
+                    "data": [...],
+                    "first_page_url": "...",
+                    "from": 1,
+                    "last_page": 1,
+                    "last_page_url": "...",
+                    "next_page_url": null,
+                    "path": "...",
+                    "per_page": 12,
+                    "prev_page_url": null,
+                    "to": 1,
+                    "total": 1
+                },
+                "filters": {
+                    "search": "laravel",
+                    "category": "web-development"
+                },
+                "message": "Filtered posts retrieved successfully"
+            }
+
+# Group Categories
+
+## Categories Collection [/categories]
+
+### List All Categories [GET]
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": [
+                    {
+                        "id": 1,
+                        "name": "Technology",
+                        "created_at": "2024-01-15T10:00:00.000000Z",
+                        "updated_at": "2024-01-15T10:00:00.000000Z",
+                        "posts_count": 5
+                    },
+                    {
+                        "id": 2,
+                        "name": "Web Development",
+                        "created_at": "2024-01-15T10:00:00.000000Z",
+                        "updated_at": "2024-01-15T10:00:00.000000Z",
+                        "posts_count": 3
+                    }
+                ],
+                "message": "Categories retrieved successfully"
+            }
+
+## Authors [/authors]
+
+### List All Authors [GET]
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": [
+                    {
+                        "id": 1,
+                        "name": "Admin User",
+                        "email": "admin@blog.com"
+                    },
+                    {
+                        "id": 2,
+                        "name": "John Doe",
+                        "email": "author@blog.com"
+                    }
+                ],
+                "message": "Authors retrieved successfully"
+            }
+
+# Group Admin
+
+Endpoints requiring administrator authentication.
+
+## Admin Posts Collection [/admin/posts]
+
+### Manage Posts [GET]
+
++ Headers
+
+        Authorization: Bearer {token}
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "current_page": 1,
+                    "data": [
+                        {
+                            "id": 1,
+                            "title": "Getting Started with Laravel",
+                            "slug": "getting-started-with-laravel",
+                            "content": "Laravel is a web application framework...",
+                            "excerpt": "Learn the basics of Laravel framework",
+                            "author": "John Doe",
+                            "featured_image": null,
+                            "tags": "laravel,php,api",
+                            "published": true,
+                            "user_id": 2,
+                            "category_id": 2,
+                            "created_at": "2024-01-15T10:00:00.000000Z",
+                            "updated_at": "2024-01-15T10:00:00.000000Z",
+                            "user": {
+                                "id": 2,
+                                "name": "John Doe",
+                                "email": "author@blog.com"
+                            },
+                            "category": {
+                                "id": 2,
+                                "name": "Web Development"
+                            }
+                        }
+                    ],
+                    // ... pagination data
+                },
+                "message": "Posts for management retrieved successfully"
+            }
+
+### Create Post [POST]
+
++ Headers
+
+        Authorization: Bearer {token}
+
++ Request (application/json)
+
+    + Attributes
+        + title: My New Blog Post (string, required) - Post title
+        + content: This is the post content... (string, required) - Post content
+        + excerpt: Brief excerpt (string, optional) - Post excerpt
+        + category_id: 1 (number, required) - Category ID
+        + tags: api,testing (string, optional) - Comma-separated tags
+        + published: true (boolean, optional) - Publication status
+
+    + Body
+
+            {
+                "title": "My New Blog Post",
+                "content": "This is the post content...",
+                "excerpt": "Brief excerpt about the post",
+                "category_id": 1,
+                "tags": "api,testing,blog",
+                "published": true
+            }
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "id": 4,
+                    "title": "My New Blog Post",
+                    "slug": "my-new-blog-post",
+                    "content": "This is the post content...",
+                    "excerpt": "Brief excerpt about the post",
+                    "author": "Admin User",
+                    "featured_image": null,
+                    "tags": "api,testing,blog",
+                    "published": true,
+                    "user_id": 1,
+                    "category_id": 1,
+                    "created_at": "2024-01-15T10:00:00.000000Z",
+                    "updated_at": "2024-01-15T10:00:00.000000Z"
+                },
+                "message": "Post created successfully"
+            }
+
+## Single Admin Post [/admin/posts/{id}]
+
+### Update Post [PUT]
+
++ Parameters
+    + id: 1 (number, required) - Post ID
+
++ Headers
+
+        Authorization: Bearer {token}
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "title": "Updated Post Title",
+                "content": "Updated content...",
+                "category_id": 2,
+                "published": false
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "id": 1,
+                    "title": "Updated Post Title",
+                    "slug": "updated-post-title",
+                    "content": "Updated content...",
+                    "excerpt": "Brief excerpt about the post",
+                    "author": "Admin User",
+                    "featured_image": null,
+                    "tags": "api,testing,blog",
+                    "published": false,
+                    "user_id": 1,
+                    "category_id": 2,
+                    "created_at": "2024-01-15T10:00:00.000000Z",
+                    "updated_at": "2024-01-15T11:00:00.000000Z"
+                },
+                "message": "Post updated successfully"
+            }
+
+### Delete Post [DELETE]
+
++ Parameters
+    + id: 1 (number, required) - Post ID
+
++ Headers
+
+        Authorization: Bearer {token}
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "message": "Post deleted successfully"
+            }
+
+## Admin Users Collection [/admin/users]
+
+### List Users [GET]
+
++ Headers
+
+        Authorization: Bearer {token}
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "current_page": 1,
+                    "data": [
+                        {
+                            "id": 1,
+                            "name": "Admin User",
+                            "email": "admin@blog.com",
+                            "role": "admin",
+                            "user_avatar": null,
+                            "created_at": "2024-01-15T10:00:00.000000Z",
+                            "updated_at": "2024-01-15T10:00:00.000000Z",
+                            "blogposts_count": 5
+                        }
+                    ],
+                    // ... pagination data
+                },
+                "message": "Users retrieved successfully"
+            }
+
+### Create User [POST]
+
++ Headers
+
+        Authorization: Bearer {token}
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "name": "New Editor",
+                "email": "editor@blog.com",
+                "password": "password123",
+                "password_confirmation": "password123",
+                "role": "author"
+            }
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "id": 3,
+                    "name": "New Editor",
+                    "email": "editor@blog.com",
+                    "role": "author",
+                    "user_avatar": null,
+                    "created_at": "2024-01-15T10:00:00.000000Z",
+                    "updated_at": "2024-01-15T10:00:00.000000Z"
+                },
+                "message": "User created successfully"
+            }
+
+## Admin Categories Collection [/admin/categories]
+
+### Create Category [POST]
+
++ Headers
+
+        Authorization: Bearer {token}
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "name": "New Category"
+            }
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "id": 9,
+                    "name": "New Category",
+                    "created_at": "2024-01-15T10:00:00.000000Z",
+                    "updated_at": "2024-01-15T10:00:00.000000Z"
+                },
+                "message": "Category created successfully"
+            }
+
+## Dashboard [/admin/dashboard]
+
+### Get Dashboard Stats [GET]
+
++ Headers
+
+        Authorization: Bearer {token}
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "success": true,
+                "data": {
+                    "stats": {
+                        "total_posts": 15,
+                        "published_posts": 12,
+                        "draft_posts": 3,
+                        "total_users": 5,
+                        "total_categories": 8
+                    },
+                    "recent_posts": [
+                        {
+                            "id": 15,
+                            "title": "Latest Post",
+                            "author": "Admin User",
+                            "created_at": "2024-01-15T10:00:00.000000Z"
+                        }
+                    ],
+                    "recent_users": [
+                        {
+                            "id": 5,
+                            "name": "New User",
+                            "email": "new@blog.com",
+                            "created_at": "2024-01-15T09:00:00.000000Z"
+                        }
+                    ]
+                },
+                "message": "Dashboard data retrieved successfully"
+            }
+
+# Data Structures
+
+## Post (object)
++ id: 1 (number)
++ title: Getting Started with Laravel (string)
++ slug: getting-started-with-laravel (string)
++ content: Laravel is a web application framework... (string)
++ excerpt: Learn the basics of Laravel framework (string)
++ author: John Doe (string)
++ featured_image: null (string, nullable)
++ tags: laravel,php,api (string)
++ published: true (boolean)
++ user_id: 2 (number)
++ category_id: 2 (number)
++ created_at: 2024-01-15T10:00:00.000000Z (string)
++ updated_at: 2024-01-15T10:00:00.000000Z (string)
++ user (User)
++ category (Category)
+
+## User (object)
++ id: 1 (number)
++ name: Admin User (string)
++ email: admin@blog.com (string)
++ role: admin (string)
++ user_avatar: null (string, nullable)
++ created_at: 2024-01-15T10:00:00.000000Z (string)
++ updated_at: 2024-01-15T10:00:00.000000Z (string)
+
+## Category (object)
++ id: 1 (number)
++ name: Technology (string)
++ created_at: 2024-01-15T10:00:00.000000Z (string)
++ updated_at: 2024-01-15T10:00:00.000000Z (string)
